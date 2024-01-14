@@ -326,12 +326,13 @@ async function run() {
 		app.post('/mail-to-lawyer', async (req, res) => {
 			const { name, email, phone, lawyerName, serviceInfo, lawyerContactInfo } = req.body;
 			const msg = {
-				to: 'gour.joy24@gmail.com', // Change to your recipient
+				to: { email }, // Change to your recipient
 				from: 'meetplanr@gmail.com', // Change to your verified sender
 				subject: `${name} Request for a Appointment to our lawyer ${lawyerName}`,
 				text: 'Confirmation mail for a Appointment',
 				html: `<div style="max-width: 500px; width: 96%; margin: 0 auto; border: 1px solid #777; padding: 20px; background: rgba(0, 0, 255, 0.1); font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif; border-radius: 10px;">
         <h2 style=" margin: 0; text-align: center">Applicant Information.</h2>
+		  <hr/>
         <h4 style="margin-bottom: 5px;">Applicant Name:</h4>
         <p style=" margin: 0;">${name}</p>
         <h4 style="margin-bottom: 5px;">Applicant Email:</h4>
@@ -342,6 +343,7 @@ async function run() {
         <p>${serviceInfo}</p>
 
         <h2 style=" margin: 0; text-align: center">Lawyer Information.</h2>
+		   <hr/>
         <h4 style="margin-bottom: 5px;">Lawyer Name:</h4>
         <p style=" margin: 0;">${lawyerName}</p>
         <h4 style="margin-bottom: 5px;">Lawyer Email:</h4>
@@ -360,6 +362,7 @@ async function run() {
 					});
 				})
 				.catch((error) => {
+					console.log(error);
 					console.error({
 						message: 'Something went wrong...',
 						status: 500
