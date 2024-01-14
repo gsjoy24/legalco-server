@@ -33,18 +33,32 @@ async function run() {
 		// Connect the client to the server	(optional starting in v4.7)
 		client.connect();
 
-		const appointmentsCollection = client.db('Legalco').collection('appointments');
+		// * collections
+		const appointmentCollection = client.db('Legalco').collection('appointments');
+		const adminCollection = client.db('Legalco').collection('admins');
+		const blogCollection = client.db('Legalco').collection('blogs');
+		const lawyerCollection = client.db('Legalco').collection('lawyer');
+		const serviceCollection = client.db('Legalco').collection('services');
+		const reviewCollection = client.db('Legalco').collection('reviews');
+		const lawyerAppointmentsCollection = client.db('Legalco').collection('lawyerappointments');
 
-		// get all appointments
-		app.get('/appointments', async (req, res) => {
-			const result = await appointmentsCollection.find().toArray();
+		// add appointments
+		app.post('/appointments', async (req, res) => {
+			const newAppointment = req.body;
+			const result = await appointmentCollection.insertOne(newAppointment);
 			res.send(result);
 		});
 
 		// get all appointments
+		app.get('/appointments', async (req, res) => {
+			const result = await appointmentCollection.find().toArray();
+			res.send(result);
+		});
+
+		// delete an appointment
 		app.delete('/appointments/:id', async (req, res) => {
-			const 
-			const result = await appointmentsCollection.find().toArray();
+			const query = { _id: new ObjectId(req.params.id) };
+			const result = await appointmentCollection.deleteOne(query);
 			res.send(result);
 		});
 
