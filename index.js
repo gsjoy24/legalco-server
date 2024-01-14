@@ -5,6 +5,11 @@ require('dotenv').config();
 const cors = require('cors');
 const port = process.env.PORT || 5000;
 
+// for mailing
+const api_key = process.env.SEND_GRID_KEY;
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(api_key);
+
 // middlewares
 app.use(cors());
 app.use(express.json());
@@ -67,6 +72,16 @@ async function run() {
 		app.delete('/appointments/:id', async (req, res) => {
 			const query = { _id: new ObjectId(req.params.id) };
 			const result = await appointmentCollection.deleteOne(query);
+			res.send(result);
+		});
+
+		// update an appointment
+		app.patch('/appointments/:id', async (req, res) => {
+			const query = { _id: new ObjectId(req.params.id) };
+			const updatedAppointment = req.body;
+			const result = await appointmentCollection.updateOne(query, {
+				$set: updatedAppointment
+			});
 			res.send(result);
 		});
 
@@ -274,6 +289,82 @@ async function run() {
 			const appointment = req.body;
 			const result = await lawyerAppointmentsCollection.insertOne(appointment);
 			res.send(result);
+		});
+
+		// get all lawyer appointments
+		app.get('/lawyerAppointments', async (req, res) => {
+			const result = await lawyerAppointmentsCollection.find().toArray();
+			res.send(result);
+		});
+
+		// get single lawyer appointment
+		app.get('/lawyerAppointments/:id', async (req, res) => {
+			const id = req.params.id;
+			const query = { _id: new ObjectId(id) };
+			const result = await lawyerAppointmentsCollection.findOne(query);
+			res.send(result);
+		});
+
+		// delete a lawyer appointment
+		app.delete('/lawyerAppointments/:id', async (req, res) => {
+			const id = req.params.id;
+			const query = { _id: new ObjectId(id) };
+			const result = await lawyerAppointmentsCollection.deleteOne(query);
+			res.send(result);
+		});
+
+		// update a lawyer appointment
+		app.put('/lawyerAppointments/:id', async (req, res) => {
+			const id = req.params.id;
+			const query = { _id: new ObjectId(id) };
+			const updatedAppointment = req.body;
+			const result = await lawyerAppointmentsCollection.updateOne(query, { $set: updatedAppointment });
+			res.send(result);
+		});
+
+		// ! send mail
+		app.post('/mail-to-lawyer', async (req, res) => {
+			const { name, email, phone, lawyerName, serviceInfo, lawyerContactInfo } = req.body;
+			const msg = {
+				to: 'gour.joy24@gmail.com', // Change to your recipient
+				from: 'meetplanr@gmail.com', // Change to your verified sender
+				subject: `${name} Request for a Appointment to our lawyer ${lawyerName}`,
+				text: 'Confirmation mail for a Appointment',
+				html: `<div style="max-width: 500px; width: 96%; border: 1px solid #777; padding: 20px; background: rgba(0, 0, 255, 0.1); font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif; border-radius: 10px;">
+        <h2 style=" margin: 0; text-align: center">Applicant Information.</h2>
+        <h4 style="margin-bottom: 5px;">Applicant Name:</h4>
+        <p style=" margin: 0;">${name}</p>
+        <h4 style="margin-bottom: 5px;">Applicant Email:</h4>
+        <p style=" margin: 0;">${email}</p>
+        <h4 style="margin-bottom: 5px;">Applicant Phone:</h4>
+        <p style=" margin: 0;">${phone}</p>
+        <h4 style="margin-bottom: 5px;">Service Description:</h4>
+        <p>${serviceInfo}</p>
+
+        <h2 style=" margin: 0; text-align: center">Lawyer Information.</h2>
+        <h4 style="margin-bottom: 5px;">Lawyer Name:</h4>
+        <p style=" margin: 0;">${lawyerName}</p>
+        <h4 style="margin-bottom: 5px;">Lawyer Email:</h4>
+        <p style=" margin: 0;">${lawyerContactInfo?.email}</p>
+        <h4 style="margin-bottom: 5px;">Lawyer Phone:</h4>
+        <p style=" margin: 0;">${lawyerContactInfo?.phone}</p>
+    </div>`
+			};
+
+			sgMail
+				.send(msg)
+				.then(() => {
+					return res.json({
+						message: 'Message sent successfully!',
+						status: 200
+					});
+				})
+				.catch((error) => {
+					console.error({
+						message: 'Something went wrong...',
+						status: 500
+					});
+				});
 		});
 
 		// Send a ping to confirm a successful connection
