@@ -191,33 +191,43 @@ async function run() {
 			res.send(result);
 		});
 
-		// sorting method
-		// app.get('/toys/:user/sort', async (req, res) => {
-		// 	const type = req.query.type === 'ascending';
-		// 	const user = req.params.user;
-		// 	const query = { seller_email: user };
+		// ! for services
+		app.post('/services', async (req, res) => {
+			const service = req.body;
+			const result = await serviceCollection.insertOne(service);
+			res.send(result);
+		});
 
-		// 	let sortObj = { price: 1 };
-		// 	if (type) {
-		// 		sortObj = { price: 1 };
-		// 	} else {
-		// 		sortObj = { price: -1 };
-		// 	}
-		// 	const result = await toyCollection.find(query).sort(sortObj).toArray();
-		// 	res.send(result);
-		// });
+		// get all services
+		app.get('/services', async (req, res) => {
+			const result = await serviceCollection.find().toArray();
+			res.send(result);
+		});
 
-		// update toys information
-		// app.patch('/toys/:id', async (req, res) => {
-		// 	const id = req.params.id;
-		// 	const toy = req.body;
-		// 	const query = { _id: new ObjectId(id) };
-		// 	const updatedDoc = {
-		// 		$set: toy
-		// 	};
-		// 	const result = await toyCollection.updateOne(query, updatedDoc);
-		// 	res.send(result);
-		// });
+		// get single service
+		app.get('/services/:id', async (req, res) => {
+			const id = req.params.id;
+			const query = { _id: new ObjectId(id) };
+			const result = await serviceCollection.findOne(query);
+			res.send(result);
+		});
+
+		// delete a service
+		app.delete('/services/:id', async (req, res) => {
+			const id = req.params.id;
+			const query = { _id: new ObjectId(id) };
+			const result = await serviceCollection.deleteOne(query);
+			res.send(result);
+		});
+
+		// update a service
+		app.put('/services/:id', async (req, res) => {
+			const id = req.params.id;
+			const query = { _id: new ObjectId(id) };
+			const updatedService = req.body;
+			const result = await serviceCollection.updateOne(query, { $set: updatedService });
+			res.send(result);
+		});
 
 		// Send a ping to confirm a successful connection
 		await client.db('admin').command({ ping: 1 });
