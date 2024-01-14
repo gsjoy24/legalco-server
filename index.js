@@ -5,7 +5,7 @@ require('dotenv').config();
 const cors = require('cors');
 const port = process.env.PORT || 5000;
 
-// middleware
+// middlewares
 app.use(cors());
 app.use(express.json());
 
@@ -42,6 +42,7 @@ async function run() {
 		const reviewCollection = client.db('Legalco').collection('reviews');
 		const lawyerAppointmentsCollection = client.db('Legalco').collection('lawyerappointments');
 
+		// ! for appointments
 		// add appointments
 		app.post('/appointments', async (req, res) => {
 			const newAppointment = req.body;
@@ -55,6 +56,13 @@ async function run() {
 			res.send(result);
 		});
 
+		// get single appointment
+		app.get('/appointments/:id', async (req, res) => {
+			const query = { _id: new ObjectId(req.params.id) };
+			const result = await appointmentCollection.findOne(query);
+			res.send(result);
+		});
+
 		// delete an appointment
 		app.delete('/appointments/:id', async (req, res) => {
 			const query = { _id: new ObjectId(req.params.id) };
@@ -62,7 +70,50 @@ async function run() {
 			res.send(result);
 		});
 
-		// // sorting method
+		// ! for admin
+		// add admin
+		app.post('/admins', async (req, res) => {
+			const newAdmin = req.body;
+			const result = await adminCollection.insertOne(newAdmin);
+			res.send(result);
+		});
+
+		// get all admins
+		app.get('/admins', async (req, res) => {
+			const result = await adminCollection.find().toArray();
+			res.send(result);
+		});
+
+		// get an admin
+		app.get('/admins/:email', async (req, res) => {
+			const email = req.params.email;
+			const query = { email };
+			const result = await adminCollection.findOne(query);
+			res.send(result);
+		});
+
+		// delete an admin
+		app.delete('/admins/:email', async (req, res) => {
+			const email = req.params.email;
+			const query = { email };
+			const result = await adminCollection.deleteOne(query);
+			res.send(result);
+		});
+
+		// toggle admin role
+		app.patch('/toggle-admin-role/:email', async (req, res) => {
+			const email = req.params.email;
+			const query = { email };
+			const admin = await adminCollection.findOne(query);
+			if (!admin) {
+				return res.send({ message: 'No admin found' });
+			}
+			const newRole = admin.role === 'admin' ? 'user' : 'admin';
+			const result = await adminCollection.updateOne(query, { $set: { role: newRole } });
+			res.send(result);
+		});
+
+		// sorting method
 		// app.get('/toys/:user/sort', async (req, res) => {
 		// 	const type = req.query.type === 'ascending';
 		// 	const user = req.params.user;
@@ -78,14 +129,6 @@ async function run() {
 		// 	res.send(result);
 		// });
 
-		// to get single toy
-		// app.get('/toys/:id', async (req, res) => {
-		// 	const id = req.params.id;
-		// 	const query = { _id: new ObjectId(id) };
-		// 	const result = await toyCollection.findOne(query);
-		// 	res.send(result);
-		// });
-
 		// update toys information
 		// app.patch('/toys/:id', async (req, res) => {
 		// 	const id = req.params.id;
@@ -95,14 +138,6 @@ async function run() {
 		// 		$set: toy
 		// 	};
 		// 	const result = await toyCollection.updateOne(query, updatedDoc);
-		// 	res.send(result);
-		// });
-
-		// delete from database
-		// app.delete('/toys/:id', async (req, res) => {
-		// 	const id = req.params.id;
-		// 	const query = { _id: new ObjectId(id) };
-		// 	const result = await toyCollection.deleteOne(query);
 		// 	res.send(result);
 		// });
 
