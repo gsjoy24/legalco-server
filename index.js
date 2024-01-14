@@ -152,7 +152,44 @@ async function run() {
 			res.send(result);
 		});
 
-		
+		// ! for lawyer
+		// add lawyer
+		app.post('/lawyers', async (req, res) => {
+			const lawyer = req.body;
+			const result = await lawyerCollection.insertOne(lawyer);
+			res.send(result);
+		});
+
+		// get all lawyers
+		app.get('/lawyers', async (req, res) => {
+			const result = await lawyerCollection.find().toArray();
+			res.send(result);
+		});
+
+		// get single lawyer
+		app.get('/lawyers/:id', async (req, res) => {
+			const id = req.params.id;
+			const query = { _id: new ObjectId(id) };
+			const result = await lawyerCollection.findOne(query);
+			res.send(result);
+		});
+
+		// delete a lawyer
+		app.delete('/lawyers/:id', async (req, res) => {
+			const id = req.params.id;
+			const query = { _id: new ObjectId(id) };
+			const result = await lawyerCollection.deleteOne(query);
+			res.send(result);
+		});
+
+		// update a lawyer
+		app.put('/lawyers/:id', async (req, res) => {
+			const id = req.params.id;
+			const query = { _id: new ObjectId(id) };
+			const updatedLawyer = req.body;
+			const result = await lawyerCollection.updateOne(query, { $set: updatedLawyer });
+			res.send(result);
+		});
 
 		// sorting method
 		// app.get('/toys/:user/sort', async (req, res) => {
