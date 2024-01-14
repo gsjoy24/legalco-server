@@ -70,7 +70,7 @@ async function run() {
 			res.send(result);
 		});
 
-		// ! for admin
+		// ! for admins
 		// add admin
 		app.post('/admins', async (req, res) => {
 			const newAdmin = req.body;
@@ -112,6 +112,47 @@ async function run() {
 			const result = await adminCollection.updateOne(query, { $set: { role: newRole } });
 			res.send(result);
 		});
+
+		// ! for blogs
+		// add blog
+		app.post('/blogs', async (req, res) => {
+			const blog = req.body;
+			const result = await blogCollection.insertOne(blog);
+			res.send(result);
+		});
+
+		// get all blogs
+		app.get('/blogs', async (req, res) => {
+			const result = await blogCollection.find().toArray();
+			res.send(result);
+		});
+
+		// get single blog
+		app.get('/blogs/:id', async (req, res) => {
+			const id = req.params.id;
+			const query = { _id: new ObjectId(id) };
+			const result = await blogCollection.findOne(query);
+			res.send(result);
+		});
+
+		// delete a blog
+		app.delete('/blogs/:id', async (req, res) => {
+			const id = req.params.id;
+			const query = { _id: new ObjectId(id) };
+			const result = await blogCollection.deleteOne(query);
+			res.send(result);
+		});
+
+		// update a blog
+		app.put('/blogs/:id', async (req, res) => {
+			const id = req.params.id;
+			const query = { _id: new ObjectId(id) };
+			const updatedBlog = req.body;
+			const result = await blogCollection.updateOne(query, { $set: updatedBlog });
+			res.send(result);
+		});
+
+		
 
 		// sorting method
 		// app.get('/toys/:user/sort', async (req, res) => {
