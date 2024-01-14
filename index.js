@@ -330,7 +330,7 @@ async function run() {
 				from: 'meetplanr@gmail.com', // Change to your verified sender
 				subject: `${name} Request for a Appointment to our lawyer ${lawyerName}`,
 				text: 'Confirmation mail for a Appointment',
-				html: `<div style="max-width: 500px; width: 96%; border: 1px solid #777; padding: 20px; background: rgba(0, 0, 255, 0.1); font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif; border-radius: 10px;">
+				html: `<div style="max-width: 500px; width: 96%; margin: 0 auto; border: 1px solid #777; padding: 20px; background: rgba(0, 0, 255, 0.1); font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif; border-radius: 10px;">
         <h2 style=" margin: 0; text-align: center">Applicant Information.</h2>
         <h4 style="margin-bottom: 5px;">Applicant Name:</h4>
         <p style=" margin: 0;">${name}</p>
