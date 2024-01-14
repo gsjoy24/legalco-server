@@ -268,6 +268,14 @@ async function run() {
 			res.send(result);
 		});
 
+		// ! for lawyer Appointments
+		// add lawyer appointments
+		app.post('/lawyerAppointments', async (req, res) => {
+			const appointment = req.body;
+			const result = await lawyerAppointmentsCollection.insertOne(appointment);
+			res.send(result);
+		});
+
 		// Send a ping to confirm a successful connection
 		await client.db('admin').command({ ping: 1 });
 		console.log('Pinged your deployment. You successfully connected to MongoDB!');
